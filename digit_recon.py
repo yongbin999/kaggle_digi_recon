@@ -10,7 +10,10 @@ features_test = pd.read_csv("./input/test.csv").values
 
 #run through 3 base models and 2 ensembles
 
-prediction = RandomForestClassifier(n_estimators=500,max_depth=50,random_state=0,n_jobs=-1).fit(features_train, labels_train).predict(features_test)
+prediction = scikit_models.scikit_ran_forest(features_train, labels_train,features_test,alpha=500,beta =50)
+
+
+#prediction = scikit_models.scikit_ada_boost(features_train, labels_train,features_test,alpha=50)
 
 """
 best_model = scikit_models.select_best_model(features_train,labels_train, data_title="digit recon")
