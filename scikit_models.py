@@ -110,16 +110,6 @@ def select_best_model(training_X,training_Y,data_title=None):
 	predict0 = time.clock() - start_time
 	print
 
-	start_time = time.clock()
-	dict_alpha1 = optimize_alpha("knn",train_set_X,train_set_Y,validate_set_X,validate_set_Y)
-	best_alpha1 = int(argmax(dict_alpha1)[0])
-	print "\talpha: "+str(best_alpha1)
-	train_time1 = time.clock() - start_time
-
-	start_time = time.clock()
-	y_test1 = scikit_knn_model(full_train_set_X, full_train_set_Y, test_set_X,test_set_Y,alpha = best_alpha1)
-	predict1 = time.clock() - start_time
-	print
 
 	start_time = time.clock()
 	dict_alpha2 = optimize_alpha("log_reg",train_set_X,train_set_Y,validate_set_X,validate_set_Y)
@@ -186,16 +176,16 @@ def select_best_model(training_X,training_Y,data_title=None):
 	dict_errors = dict_choices
 	for key, value in dict_errors.iteritems():
 		dict_errors[key] = 1- value 
-	errors = [dict_errors["dc_tree"],dict_errors["knn"],dict_errors["log_reg"]]
-	traintimes = [train_time0,train_time1,train_time2]
-	predicttimes = [predict0,predict1,predict2]
+	errors = [dict_errors["dc_tree"],dict_errors["log_reg"]]
+	traintimes = [train_time0,train_time2]
+	predicttimes = [predict0,predict2]
 
 	##plot accuracy
-	plotting.bar_graph(data_title,"decisiontree","knn","log_reg",[1,2,3],errors,maxy=max(errors)*1.1,ylabel="errors")
+	plotting.bar_graph(data_title,"decisiontree","log_reg",[1,2],errors,maxy=max(errors)*1.1,ylabel="errors")
 	##plot training time
-	plotting.bar_graph(data_title,"decisiontree","knn","log_reg",[1,2,3],traintimes,maxy=max(traintimes)*1.1,ylabel="training times(s)")
+	plotting.bar_graph(data_title,"decisiontree","log_reg",[1,2],traintimes,maxy=max(traintimes)*1.1,ylabel="training times(s)")
 	##plot prediction time
-	plotting.bar_graph(data_title,"decisiontree","knn","log_reg",[1,2,3],predicttimes,maxy=max(predicttimes)*1.1,ylabel="prediction times(s)")
+	plotting.bar_graph(data_title,"decisiontree","log_reg",[1,2],predicttimes,maxy=max(predicttimes)*1.1,ylabel="prediction times(s)")
 
 
 
@@ -210,15 +200,12 @@ def select_best_model(training_X,training_Y,data_title=None):
 				alpha_X_ints.append(alpha)
 
 	alpha_Y_dc = []
-	alpha_Y_knn = []
 	alpha_Y_log_reg = []
+
+
 	dict_error0 = dict_alpha0
 	for key, value in dict_alpha0.iteritems():
 		dict_error0[key] = 1.0- value 
-
-	dict_error1 = dict_alpha1
-	for key, value in dict_alpha1.iteritems():
-		dict_error1[key] = 1.0- value 
 
 	dict_error2 = dict_alpha2
 	for key, value in dict_alpha2.iteritems():
@@ -227,14 +214,13 @@ def select_best_model(training_X,training_Y,data_title=None):
 
 	for xvalue in alpha_X:
 		alpha_Y_dc.append(dict_error0[xvalue])
-		alpha_Y_knn.append(dict_error1[xvalue])
 		alpha_Y_log_reg.append(dict_error2[xvalue])
 
-	alpha_Y = alpha_Y_dc,alpha_Y_knn,alpha_Y_log_reg
+	alpha_Y = alpha_Y_dc,alpha_Y_log_reg
 
 
 	#plot line graph
-	plotting.line_graph_alpha_error(data_title,"dc_tree","knn","log_reg",alpha_X_ints,alpha_Y)
+	plotting.line_graph_alpha_error(data_title,"dc_tree","log_reg",alpha_X_ints,alpha_Y)
 
 	return final_model,dict_alpha[final_model],best_beta3
 
