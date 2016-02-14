@@ -22,7 +22,7 @@ def optimize_alpha(modelname,X,y, X_test,y_test, alpha_low=0, alpha_high=2):
 		##finer optimizer search
 		for factor in range(3,10,3):
 			alpha =  10**(i)*factor;
-			print str(alpha)+" ",
+			print str(alpha)+" "
 
 			if (alpha >= 1):
 				if modelname == "svm":
@@ -37,12 +37,12 @@ def optimize_alpha(modelname,X,y, X_test,y_test, alpha_low=0, alpha_high=2):
 				elif modelname == "ada_boost":
 					if int(X_test.shape[0]) > 1000:
 						alpha_enlarge = alpha*9
-						if alpha_enlarge == 810: ## save time
-							alpha_accuracy[str(alpha_enlarge)] = scikit_ada_boost(X,y, X_test,y_test,alpha=alpha_enlarge)
+						#if alpha_enlarge == 810: ## save time
+						alpha_accuracy[str(alpha_enlarge)] = scikit_ada_boost(X,y, X_test,y_test,alpha=alpha_enlarge)
 					else: ## when data small dont both with the classifier 
 						alpha_enlarge = alpha
-						if alpha_enlarge == 90: ## save time
-							alpha_accuracy[str(alpha_enlarge)] = scikit_ada_boost(X,y, X_test,y_test,alpha=alpha_enlarge)
+						#if alpha_enlarge == 90: ## save time
+						alpha_accuracy[str(alpha_enlarge)] = scikit_ada_boost(X,y, X_test,y_test,alpha=alpha_enlarge)
 
 				elif modelname == "ran_forest":
 						##grid search alph x beta
@@ -85,8 +85,7 @@ def select_best_model(training_X,training_Y,data_title=None):
 	list9y = training_Y[8::10]
 	list10y = training_Y[9::10]
 
-	##split = training_X.shape[0] * .90
-	seed = 1
+
 	train_set_X = numpy.concatenate((list2x,list3x,list4x,list5x,list6x,list7x))
 	train_set_Y = numpy.concatenate((list2y,list3y,list4y,list5y,list6y,list7y))
 	validate_set_X = list8x
@@ -113,17 +112,18 @@ def select_best_model(training_X,training_Y,data_title=None):
 	print
 
 
+	y_test1 = 0.5
+
 	start_time = time.clock()
-	dict_alpha2 = optimize_alpha("log_reg",train_set_X,train_set_Y,validate_set_X,validate_set_Y)
+	dict_alpha2 = {"5":0.5}
 	best_alpha2 = float(argmax(dict_alpha2)[0])
 	print "\talpha: "+str(best_alpha2)
 	train_time2 = time.clock() - start_time
 
 	start_time = time.clock()
-	y_test2 = scikit_log_reg(full_train_set_X, full_train_set_Y, test_set_X,test_set_Y,alpha = best_alpha2)
+	y_test2 = 0.5
 	predict2 = time.clock() - start_time
 	print
-
 
 	##ensemble classifiers:
 
@@ -138,6 +138,8 @@ def select_best_model(training_X,training_Y,data_title=None):
 	y_test3 = scikit_ran_forest(full_train_set_X, full_train_set_Y, test_set_X,test_set_Y,alpha=best_alpha3,beta=best_beta3)
 	predict3 = time.clock() - start_time
 	print
+
+
 
 	start_time = time.clock()
 	dict_alpha4 = optimize_alpha("ada_boost",train_set_X,train_set_Y,validate_set_X,validate_set_Y)
