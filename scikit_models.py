@@ -12,7 +12,7 @@ def argmax(choices):
 
 
 # optimize alpha using grid search to get maxiumlikelyhood estimate 
-def optimize_alpha(modelname,X,y, X_test,y_test, alpha_low=0, alpha_high=2):
+def optimize_alpha(modelname,X,y, X_test,y_test, alpha_low=1, alpha_high=2):
 	alpha_accuracy =defaultdict(float)
 	print "\toptimizing alpha for " + modelname
 
@@ -22,7 +22,7 @@ def optimize_alpha(modelname,X,y, X_test,y_test, alpha_low=0, alpha_high=2):
 		##finer optimizer search
 		for factor in range(3,10,3):
 			alpha =  10**(i)*factor;
-			print str(alpha)+" "
+			print "\t"+str(alpha)+" "
 
 			if (alpha >= 1):
 				if modelname == "svm":
@@ -35,22 +35,20 @@ def optimize_alpha(modelname,X,y, X_test,y_test, alpha_low=0, alpha_high=2):
 				elif modelname == "log_reg":
 						alpha_accuracy[str(alpha)] = scikit_log_reg(X,y, X_test,y_test,alpha=alpha)
 				elif modelname == "ada_boost":
-					if int(X_test.shape[0]) > 1000:
-						alpha_enlarge = alpha*9
-						#if alpha_enlarge == 810: ## save time
-						alpha_accuracy[str(alpha_enlarge)] = scikit_ada_boost(X,y, X_test,y_test,alpha=alpha_enlarge)
-					else: ## when data small dont both with the classifier 
-						alpha_enlarge = alpha
-						#if alpha_enlarge == 90: ## save time
-						alpha_accuracy[str(alpha_enlarge)] = scikit_ada_boost(X,y, X_test,y_test,alpha=alpha_enlarge)
+						alpha_enlarge = alpha*5
+						if alpha_enlarge >= 90: ## save time
+							alpha_accuracy[str(alpha_enlarge)] = scikit_ada_boost(X,y, X_test,y_test,alpha=alpha_enlarge)
 
 				elif modelname == "ran_forest":
 						##grid search alph x beta
-						for j in range(alpha_low, alpha_high, 1):
-							for k in range(5,10,3):
-								beta =  10**(j)*k;
-								##print "\t\tran_forest alpha: "+str(alpha)+", beta:"+str(beta)
-								alpha_accuracy[str(alpha)+","+str(beta)] = scikit_ran_forest(X,y, X_test,y_test,alpha=alpha,beta=beta)
+						alpha_enlarge = alpha*5
+						if alpha_enlarge >= 90: ## save time
+
+							for j in range(alpha_low, alpha_high, 1):
+								for k in range(5,10,3):
+									beta =  10**(j)*k;
+									##print "\t\tran_forest alpha: "+str(alpha)+", beta:"+str(beta)
+									alpha_accuracy[str(alpha_enlarge)+","+str(beta)] = scikit_ran_forest(X,y, X_test,y_test,alpha=alpha_enlarge,beta=beta)
 						
 
 	print "\t"+str(sorted(alpha_accuracy.iteritems(), key=lambda x:-x[1])[:3])
@@ -111,7 +109,7 @@ def select_best_model(training_X,training_Y,data_title=None):
 	predict0 = time.clock() - start_time
 	print
 
-
+	best_alpha1 = 0.5
 	y_test1 = 0.5
 
 	start_time = time.clock()
@@ -196,7 +194,7 @@ def select_best_model(training_X,training_Y,data_title=None):
 	#prep for line graphs
 	alpha_X =[]
 	alpha_X_ints = []
-	for i in range(0, 2, 1):
+	for i in range(1, 2, 1):
 		for factor in range(3,10,3):
 			alpha =  10**(i)*factor;
 			if (alpha > 1):
