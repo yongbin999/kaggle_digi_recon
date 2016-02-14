@@ -22,6 +22,8 @@ def optimize_alpha(modelname,X,y, X_test,y_test, alpha_low=0, alpha_high=2):
 		##finer optimizer search
 		for factor in range(3,10,3):
 			alpha =  10**(i)*factor;
+			print str(alpha)+" ",
+
 			if (alpha >= 1):
 				if modelname == "svm":
 						alpha_accuracy[str(alpha)] = scikit_onevsrest(X,y, X_test,y_test,alpha=alpha)
